@@ -1,3 +1,4 @@
+index.html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -24,26 +25,16 @@
       flex-direction: row;
       gap: 20px;
     }
-    .main-column {
-      flex: 2;
-    }
+    .main-column { flex: 2; }
     .side-column {
       flex: 1;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
-    h1 {
-      text-align: center;
-      color: #d62828;
-    }
-    h2 {
-      color: #003049;
-      margin-top: 20px;
-    }
-    .timer-section, .airway, .timeline, .reset {
-      margin-bottom: 30px;
-    }
+    h1 { text-align: center; color: #d62828; }
+    h2 { color: #003049; margin-top: 20px; }
+    .timer-section, .airway, .timeline, .reset { margin-bottom: 30px; }
     #main-timer, #pause-timer, #compression-timer {
       font-size: 3em;
       font-weight: bold;
@@ -148,10 +139,6 @@
       </div>
     </div>
   </div>
-  <script>
-    // JavaScript funcional incluido aquí (omitido por espacio)
-  </script>
-
 <script>
   const drugCounters = {};
 
@@ -214,7 +201,7 @@
       timelineStartTime = mainSeconds;
     }
     const li = document.createElement('li');
-    const relativeTime = timelineStarted ? mainSeconds - timelineStartTime : 0;
+    const relativeTime = mainSeconds - timelineStartTime;
     li.textContent = `[${formatTime(relativeTime)}] ${text}`;
     document.getElementById('timeline-list').appendChild(li);
   }
