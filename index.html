@@ -5,6 +5,7 @@ index.html
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reanimador CUA</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -91,138 +92,26 @@ index.html
 
     label { margin-right: 10px; }
   </style>
-  <script>
-    let mainTimerInterval;
-    let mainSeconds = 0;
-    let pauseTimerInterval;
-    let pauseSeconds = 0;
-    let isPauseRunning = false;
-    let compressionInterval;
-    let compressionSecondsLeft = 120;
-    let compressionActive = false;
-    let timelineStarted = false;
-    let timelineStartTime = 0;
-
-    function formatTime(seconds) {
-      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
-      const secs = String(seconds % 60).padStart(2, '0');
-      return `${mins}:${secs}`;
-    }
-
-    function startMainTimer() {
-      clearInterval(mainTimerInterval);
-      mainTimerInterval = setInterval(() => {
-        mainSeconds++;
-        document.getElementById('main-timer').textContent = formatTime(mainSeconds);
-      }, 1000);
-      registerEvent('Inicio de reanimación');
-    }
-
-    function togglePauseTimer() {
-      const btn = document.getElementById('pause-btn');
-      if (!isPauseRunning) {
-        pauseTimerInterval = setInterval(() => {
-          pauseSeconds++;
-          document.getElementById('pause-timer').textContent = formatTime(pauseSeconds);
-        }, 1000);
-        btn.textContent = 'Pausar';
-      } else {
-        clearInterval(pauseTimerInterval);
-        btn.textContent = 'Iniciar';
-      }
-      isPauseRunning = !isPauseRunning;
-    }
-
-    function startCompressionCycle() {
-      clearInterval(compressionInterval);
-      compressionSecondsLeft = 120;
-      compressionActive = true;
-      document.getElementById('compression-timer').style.color = 'black';
-      if (!timelineStarted) {
-        timelineStarted = true;
-        timelineStartTime = mainSeconds;
-        registerEvent('Inicio de compresiones');
-      }
-      compressionInterval = setInterval(() => {
-        compressionSecondsLeft--;
-        document.getElementById('compression-timer').textContent = formatTime(compressionSecondsLeft);
-        if (compressionSecondsLeft === 30) {
-          document.getElementById('compression-timer').style.color = 'red';
-        }
-        if (compressionSecondsLeft <= 0) {
-          clearInterval(compressionInterval);
-          compressionActive = false;
-        }
-      }, 1000);
-    }
-
-    function registerEvent(text) {
-      if (!timelineStarted && text !== 'Inicio de reanimación') return;
-      const li = document.createElement('li');
-      const relativeTime = timelineStarted ? mainSeconds - timelineStartTime : 0;
-      li.textContent = `[${formatTime(relativeTime)}] ${text}`;
-      document.getElementById('timeline-list').appendChild(li);
-    }
-
-    function handleAirwayManagement() {
-      const ml = document.getElementById('input-ml').value;
-      const tet = document.getElementById('input-tet').value;
-      if (ml) registerEvent(`Manejo Vía Aérea: Máscara laríngea N° ${ml}`);
-      if (tet) registerEvent(`Manejo Vía Aérea: TET N° ${tet}`);
-    }
-
-    function registerOtherDrug() {
-      const other = document.getElementById('input-other-drug').value;
-      if (other) {
-        registerEvent(`Otro fármaco: ${other}`);
-        document.getElementById('input-other-drug').value = '';
-      }
-    }
-
-    function resetAll() {
-      clearInterval(mainTimerInterval);
-      clearInterval(pauseTimerInterval);
-      clearInterval(compressionInterval);
-      mainSeconds = 0;
-      pauseSeconds = 0;
-      compressionSecondsLeft = 120;
-      isPauseRunning = false;
-      compressionActive = false;
-      timelineStarted = false;
-      document.getElementById('main-timer').textContent = '00:00';
-      document.getElementById('pause-timer').textContent = '00:00';
-      document.getElementById('compression-timer').textContent = '02:00';
-      document.getElementById('compression-timer').style.color = 'black';
-      document.getElementById('pause-btn').textContent = 'Iniciar';
-      document.getElementById('timeline-list').innerHTML = '';
-      document.getElementById('input-ml').value = '';
-      document.getElementById('input-tet').value = '';
-      document.getElementById('input-other-drug').value = '';
-    }
-  </script>
 </head>
 <body>
   <h1>Reanimador CUA</h1>
   <div class="container">
     <div class="main-column">
       <div class="timer-section">
-        <h2>Cronómetro Central</h2>
+        <h2>Tiempo Total</h2>
         <div id="main-timer">00:00</div>
         <button onclick="startMainTimer()">Inicio Reanimación</button>
       </div>
-
       <div class="timer-section">
         <h2>Tiempo sin Compresiones</h2>
         <div id="pause-timer">00:00</div>
         <button onclick="togglePauseTimer()" id="pause-btn">Iniciar</button>
       </div>
-
       <div class="timer-section">
-        <h2>Ciclo de Compresiones (2 min)</h2>
+        <h2>Ciclo de Compresiones</h2>
         <div id="compression-timer">02:00</div>
         <button onclick="startCompressionCycle()">Inicio de Compresiones</button>
       </div>
-
       <div class="rhythm-section">
         <h2>Ritmo</h2>
         <button class="rhythm-btn" onclick="registerEvent('Ritmo: FV')">FV</button>
@@ -230,24 +119,26 @@ index.html
         <button class="rhythm-btn" onclick="registerEvent('Ritmo: Asistolia')">Asistolia</button>
         <button class="rhythm-btn" onclick="registerEvent('Ritmo: AESP')">AESP</button>
       </div>
-
       <div class="airway">
         <h2>Manejo de Vía Aérea</h2>
         <label>Máscara laríngea N° <input type="text" id="input-ml" size="3"></label>
         <label>TET N° <input type="text" id="input-tet" size="3"></label>
         <button onclick="handleAirwayManagement()">Registrar Manejo</button>
       </div>
-
+      <div class="airway">
+        <h2>Descargas</h2>
+        <label>JOULE <input type="number" id="input-joules" size="4"></label>
+        <button onclick="registerShock()">Registrar Descarga</button>
+      </div>
       <div class="timeline">
         <h2>Línea de Tiempo</h2>
         <ul id="timeline-list"></ul>
+        <button onclick="downloadTimelineAsPDF()">Descargar Línea de Tiempo (PDF)</button>
       </div>
-
       <div class="reset">
         <button onclick="resetAll()" class="reset-btn">Reiniciar Todo</button>
       </div>
     </div>
-
     <div class="side-column">
       <h2>Fármacos</h2>
       <button class="drug-btn" onclick="registerEvent('Adrenalina 1 mg')">Adrenalina 1 mg</button>
@@ -266,5 +157,143 @@ index.html
       </div>
     </div>
   </div>
+<script>
+  let mainTimerInterval;
+  let mainSeconds = 0;
+  let pauseTimerInterval;
+  let pauseSeconds = 0;
+  let isPauseRunning = false;
+  let compressionInterval;
+  let compressionSecondsLeft = 120;
+  let compressionActive = false;
+  let timelineStarted = false;
+  let timelineStartTime = 0;
+
+  function formatTime(seconds) {
+    const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const secs = String(seconds % 60).padStart(2, '0');
+    return `${mins}:${secs}`;
+  }
+
+  function startMainTimer() {
+    clearInterval(mainTimerInterval);
+    mainTimerInterval = setInterval(() => {
+      mainSeconds++;
+      document.getElementById('main-timer').textContent = formatTime(mainSeconds);
+    }, 1000);
+    registerEvent('Inicio de reanimación');
+  }
+
+  function togglePauseTimer() {
+    const btn = document.getElementById('pause-btn');
+    if (!isPauseRunning) {
+      pauseTimerInterval = setInterval(() => {
+        pauseSeconds++;
+        document.getElementById('pause-timer').textContent = formatTime(pauseSeconds);
+      }, 1000);
+      btn.textContent = 'Pausar';
+    } else {
+      clearInterval(pauseTimerInterval);
+      btn.textContent = 'Iniciar';
+    }
+    isPauseRunning = !isPauseRunning;
+  }
+
+  function startCompressionCycle() {
+    clearInterval(compressionInterval);
+    compressionSecondsLeft = 120;
+    compressionActive = true;
+    document.getElementById('compression-timer').style.color = 'black';
+    if (!timelineStarted) {
+      timelineStarted = true;
+      timelineStartTime = mainSeconds;
+      registerEvent('Inicio de compresiones');
+    }
+    compressionInterval = setInterval(() => {
+      compressionSecondsLeft--;
+      document.getElementById('compression-timer').textContent = formatTime(compressionSecondsLeft);
+      if (compressionSecondsLeft === 30) {
+        document.getElementById('compression-timer').style.color = 'red';
+      }
+      if (compressionSecondsLeft <= 0) {
+        clearInterval(compressionInterval);
+        compressionActive = false;
+      }
+    }, 1000);
+  }
+
+  function registerEvent(text) {
+    if (!timelineStarted) {
+      timelineStarted = true;
+      timelineStartTime = mainSeconds;
+    }
+    const li = document.createElement('li');
+    const relativeTime = timelineStarted ? mainSeconds - timelineStartTime : 0;
+    li.textContent = `[${formatTime(relativeTime)}] ${text}`;
+    document.getElementById('timeline-list').appendChild(li);
+  }
+
+  function handleAirwayManagement() {
+    const ml = document.getElementById('input-ml').value;
+    const tet = document.getElementById('input-tet').value;
+    if (ml) registerEvent(`Manejo Vía Aérea: Máscara laríngea N° ${ml}`);
+    if (tet) registerEvent(`Manejo Vía Aérea: TET N° ${tet}`);
+  }
+
+  function registerOtherDrug() {
+    const other = document.getElementById('input-other-drug').value;
+    if (other) {
+      registerEvent(`Otro fármaco: ${other}`);
+      document.getElementById('input-other-drug').value = '';
+    }
+  }
+
+  function registerShock() {
+    const joules = document.getElementById('input-joules').value;
+    if (joules) {
+      registerEvent(`Descarga eléctrica: ${joules} JOULE`);
+      document.getElementById('input-joules').value = '';
+    }
+  }
+
+  function downloadTimelineAsPDF() {
+    const listItems = document.querySelectorAll('#timeline-list li');
+    const doc = new window.jspdf.jsPDF();
+    doc.setFontSize(12);
+    doc.text("Línea de Tiempo - Reanimador CUA", 10, 10);
+    let y = 20;
+    listItems.forEach((item) => {
+      doc.text(item.textContent, 10, y);
+      y += 10;
+      if (y > 280) {
+        doc.addPage();
+        y = 20;
+      }
+    });
+    doc.save("linea_de_tiempo_RCP.pdf");
+  }
+
+  function resetAll() {
+    clearInterval(mainTimerInterval);
+    clearInterval(pauseTimerInterval);
+    clearInterval(compressionInterval);
+    mainSeconds = 0;
+    pauseSeconds = 0;
+    compressionSecondsLeft = 120;
+    isPauseRunning = false;
+    compressionActive = false;
+    timelineStarted = false;
+    document.getElementById('main-timer').textContent = '00:00';
+    document.getElementById('pause-timer').textContent = '00:00';
+    document.getElementById('compression-timer').textContent = '02:00';
+    document.getElementById('compression-timer').style.color = 'black';
+    document.getElementById('pause-btn').textContent = 'Iniciar';
+    document.getElementById('timeline-list').innerHTML = '';
+    document.getElementById('input-ml').value = '';
+    document.getElementById('input-tet').value = '';
+    document.getElementById('input-other-drug').value = '';
+    document.getElementById('input-joules').value = '';
+  }
+</script>
 </body>
 </html>
