@@ -15,12 +15,23 @@ index.html
     }
 
     .container {
-      max-width: 800px;
+      max-width: 1200px;
       margin: auto;
-      background: #fff;
+      background: #ffffff;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+    }
+
+    .main-column {
+      flex: 2;
+    }
+
+    .side-column {
+      flex: 1;
     }
 
     h1 {
@@ -30,17 +41,19 @@ index.html
 
     h2 {
       color: #003049;
+      margin-top: 20px;
     }
 
-    .timer-section, .actions, .airway, .timeline, .reset {
+    .timer-section, .rhythm-section, .airway, .timeline, .reset {
       margin-bottom: 30px;
     }
 
     #main-timer, #pause-timer, #compression-timer {
-      font-size: 2em;
+      font-size: 3em;
       font-weight: bold;
       margin: 10px 0;
       color: #264653;
+      text-align: center;
     }
 
     button {
@@ -48,30 +61,21 @@ index.html
       margin: 5px;
       border: none;
       border-radius: 8px;
-      background-color: #2a9d8f;
-      color: white;
       font-size: 1em;
       cursor: pointer;
       transition: background-color 0.3s;
     }
 
-    button:hover {
-      background-color: #21867a;
-    }
+    .reset-btn { background-color: #e63946; color: white; }
+    .reset-btn:hover { background-color: #c9182b; }
 
-    .reset-btn {
-      background-color: #e76f51;
-    }
+    .rhythm-btn { background-color: #003049; color: white; }
+    .rhythm-btn:hover { background-color: #001f2e; }
 
-    .reset-btn:hover {
-      background-color: #d65a3a;
-    }
+    .drug-btn { background-color: #f77f00; color: white; width: 100%; text-align: left; }
+    .drug-btn:hover { background-color: #e76f00; }
 
-    .timeline ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
+    .timeline ul { list-style-type: none; padding: 0; }
     .timeline li {
       background-color: #e9ecef;
       margin-bottom: 8px;
@@ -85,9 +89,7 @@ index.html
       margin-left: 5px;
     }
 
-    label {
-      margin-right: 10px;
-    }
+    label { margin-right: 10px; }
   </style>
   <script>
     let mainTimerInterval;
@@ -136,13 +138,11 @@ index.html
       compressionSecondsLeft = 120;
       compressionActive = true;
       document.getElementById('compression-timer').style.color = 'black';
-
       if (!timelineStarted) {
         timelineStarted = true;
         timelineStartTime = mainSeconds;
         registerEvent('Inicio de compresiones');
       }
-
       compressionInterval = setInterval(() => {
         compressionSecondsLeft--;
         document.getElementById('compression-timer').textContent = formatTime(compressionSecondsLeft);
@@ -202,59 +202,68 @@ index.html
   </script>
 </head>
 <body>
+  <h1>Reanimador CUA</h1>
   <div class="container">
-    <h1>Reanimador CUA</h1>
+    <div class="main-column">
+      <div class="timer-section">
+        <h2>Cronómetro Central</h2>
+        <div id="main-timer">00:00</div>
+        <button onclick="startMainTimer()">Inicio Reanimación</button>
+      </div>
 
-    <div class="timer-section">
-      <h2>Cronómetro Central</h2>
-      <div id="main-timer">00:00</div>
-      <button onclick="startMainTimer()">Inicio Reanimación</button>
-    </div>
+      <div class="timer-section">
+        <h2>Tiempo sin Compresiones</h2>
+        <div id="pause-timer">00:00</div>
+        <button onclick="togglePauseTimer()" id="pause-btn">Iniciar</button>
+      </div>
 
-    <div class="timer-section">
-      <h2>Tiempo sin Compresiones</h2>
-      <div id="pause-timer">00:00</div>
-      <button onclick="togglePauseTimer()" id="pause-btn">Iniciar</button>
-    </div>
+      <div class="timer-section">
+        <h2>Ciclo de Compresiones (2 min)</h2>
+        <div id="compression-timer">02:00</div>
+        <button onclick="startCompressionCycle()">Inicio de Compresiones</button>
+      </div>
 
-    <div class="timer-section">
-      <h2>Ciclo de Compresiones (2 min)</h2>
-      <div id="compression-timer">02:00</div>
-      <button onclick="startCompressionCycle()">Inicio de Compresiones</button>
-    </div>
+      <div class="rhythm-section">
+        <h2>Ritmo</h2>
+        <button class="rhythm-btn" onclick="registerEvent('Ritmo: FV')">FV</button>
+        <button class="rhythm-btn" onclick="registerEvent('Ritmo: TVSP')">TVSP</button>
+        <button class="rhythm-btn" onclick="registerEvent('Ritmo: Asistolia')">Asistolia</button>
+        <button class="rhythm-btn" onclick="registerEvent('Ritmo: AESP')">AESP</button>
+      </div>
 
-    <div class="actions">
-      <h2>Acciones / Fármacos</h2>
-      <button onclick="registerEvent('Adrenalina 1 mg')">Adrenalina 1 mg</button>
-      <button onclick="registerEvent('Amiodarona 150 mg')">Amiodarona 150 mg</button>
-      <button onclick="registerEvent('Amiodarona 300 mg')">Amiodarona 300 mg</button>
-      <button onclick="registerEvent('Bicarbonato 2/3 M 250 cc')">Bicarbonato 2/3 M 250 cc</button>
-      <button onclick="registerEvent('Atropina 1 mg')">Atropina 1 mg</button>
-      <button onclick="registerEvent('Gluconato de Calcio 10%')">Gluconato de Calcio 10%</button>
-      <button onclick="registerEvent('Sulfato de Magnesio 2 g')">Sulfato de Magnesio 2 g</button>
-      <button onclick="registerEvent('Dextrosa 30% 20 ml')">Dextrosa 30% 20 ml</button>
-      <button onclick="registerEvent('Naloxona 0.4 mg')">Naloxona 0.4 mg</button>
-      <div>
-        <label>Otro fármaco:</label>
-        <input type="text" id="input-other-drug" placeholder="Nombre y dosis" />
-        <button onclick="registerOtherDrug()">Registrar Otro</button>
+      <div class="airway">
+        <h2>Manejo de Vía Aérea</h2>
+        <label>Máscara laríngea N° <input type="text" id="input-ml" size="3"></label>
+        <label>TET N° <input type="text" id="input-tet" size="3"></label>
+        <button onclick="handleAirwayManagement()">Registrar Manejo</button>
+      </div>
+
+      <div class="timeline">
+        <h2>Línea de Tiempo</h2>
+        <ul id="timeline-list"></ul>
+      </div>
+
+      <div class="reset">
+        <button onclick="resetAll()" class="reset-btn">Reiniciar Todo</button>
       </div>
     </div>
 
-    <div class="airway">
-      <h2>Manejo de Vía Aérea</h2>
-      <label>Máscara laríngea N° <input type="text" id="input-ml" size="3" /></label>
-      <label>TET N° <input type="text" id="input-tet" size="3" /></label>
-      <button onclick="handleAirwayManagement()">Registrar Manejo</button>
-    </div>
-
-    <div class="timeline">
-      <h2>Línea de Tiempo</h2>
-      <ul id="timeline-list"></ul>
-    </div>
-
-    <div class="reset">
-      <button onclick="resetAll()" class="reset-btn">Reiniciar Todo</button>
+    <div class="side-column">
+      <h2>Fármacos</h2>
+      <button class="drug-btn" onclick="registerEvent('Adrenalina 1 mg')">Adrenalina 1 mg</button>
+      <button class="drug-btn" onclick="registerEvent('Amiodarona 150 mg')">Amiodarona 150 mg</button>
+      <button class="drug-btn" onclick="registerEvent('Amiodarona 300 mg')">Amiodarona 300 mg</button>
+      <button class="drug-btn" onclick="registerEvent('Bicarbonato 2/3 M 250 cc')">Bicarbonato 2/3 M 250 cc</button>
+      <button class="drug-btn" onclick="registerEvent('Atropina 1 mg')">Atropina 1 mg</button>
+      <button class="drug-btn" onclick="registerEvent('Gluconato de Calcio 10%')">Gluconato de Calcio 10%</button>
+      <button class="drug-btn" onclick="registerEvent('Sulfato de Magnesio 2 g')">Sulfato de Magnesio 2 g</button>
+      <button class="drug-btn" onclick="registerEvent('Dextrosa 30% 20 ml')">Dextrosa 30% 20 ml</button>
+      <button class="drug-btn" onclick="registerEvent('Naloxona 0.4 mg')">Naloxona 0.4 mg</button>
+      <div style="margin-top: 10px;">
+        <label>Otro:</label>
+        <input type="text" id="input-other-drug" placeholder="Nombre y dosis" />
+        <button onclick="registerOtherDrug()">Registrar</button>
+      </div>
     </div>
   </div>
 </body>
