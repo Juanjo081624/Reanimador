@@ -14,34 +14,8 @@ index.html
       padding: 20px;
       color: #333;
     }
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-direction: row;
-      gap: 20px;
-    }
-    .main-column { flex: 2; }
-    .side-column {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
     h1 { text-align: center; color: #d62828; }
     h2 { color: #003049; margin-top: 20px; }
-    .timer-section, .airway, .timeline, .reset { margin-bottom: 30px; }
-    #main-timer, #pause-timer, #compression-timer {
-      font-size: 3em;
-      font-weight: bold;
-      margin: 10px 0;
-      color: #264653;
-      text-align: center;
-    }
     button {
       padding: 10px 15px;
       margin: 5px;
@@ -49,255 +23,243 @@ index.html
       border-radius: 8px;
       font-size: 1em;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
-    .reset-btn { background-color: #e63946; color: white; }
-    .reset-btn:hover { background-color: #c9182b; }
-    .rhythm-btn { background-color: #003049; color: white; display: block; width: 100%; }
-    .rhythm-btn:hover { background-color: #001f2e; }
-    .drug-btn { background-color: #f77f00; color: white; width: 100%; text-align: left; }
+    .drug-btn {
+      background-color: #f77f00;
+      color: white;
+      width: 100%;
+      text-align: left;
+    }
     .drug-btn:hover { background-color: #e76f00; }
-    .timeline ul { list-style-type: none; padding: 0; }
-    .timeline li {
-      background-color: #e9ecef;
-      margin-bottom: 8px;
-      padding: 10px;
-      border-radius: 5px;
+    .rhythm-btn {
+      background-color: #003049;
+      color: white;
+      display: block;
+      width: 100%;
     }
-    .airway input, .actions input {
-      width: 150px;
-      padding: 5px;
-      margin-left: 5px;
-    }
-    label { margin-right: 10px; }
+    .rhythm-btn:hover { background-color: #001f2e; }
   </style>
 </head>
 <body>
   <h1>Reanimador CUA</h1>
-  <div class="container">
-    <div class="main-column">
-      <div class="timer-section" style="text-align: center;">
-        <h2>Tiempo Total</h2>
-        <div id="main-timer">00:00</div>
-        <button onclick="startMainTimer()">Inicio Reanimación</button>
-      </div>
-      <div class="timer-section" style="text-align: center;">
-        <h2>Tiempo sin Compresiones</h2>
-        <div id="pause-timer">00:00</div>
-        <button id="pause-btn" onclick="togglePauseTimer()">Iniciar</button>
-      </div>
-      <div class="timer-section" style="text-align: center;">
-        <h2>Ciclo de Compresiones</h2>
-        <div id="compression-timer">02:00</div>
-        <button onclick="startCompressionCycle()">Inicio de Compresiones</button>
-      </div>
-      <div class="airway">
-        <h2>Manejo de Vía Aérea</h2>
-        <label>Máscara laríngea N° <input type="text" id="input-ml" size="3"></label>
-        <label>TET N° <input type="text" id="input-tet" size="3"></label>
-        <button onclick="handleAirwayManagement()">Registrar Manejo</button>
-      </div>
-      <div class="airway">
-        <h2>Descargas</h2>
-        <label>JOULE <input type="number" id="input-joules" size="4"></label>
-        <button onclick="registerShock()">Registrar Descarga</button>
-      </div>
-      <div class="timeline">
-        <h2>Línea de Tiempo</h2>
-        <ul id="timeline-list"></ul>
-        <button onclick="downloadTimelineAsPDF()">Descargar Línea de Tiempo (PDF)</button>
-      </div>
-      <div class="reset">
-        <button onclick="resetAll()" class="reset-btn">Reiniciar Todo</button>
-        <button onclick="registerEvent('RCE')">RCE</button>
-        <button onclick="endResuscitation()">Fin de Reanimación</button>
-      </div>
-    </div>
-    <div class="side-column">
-      <div class="rhythm-section">
-        <h2>Ritmo</h2>
-        <button class="rhythm-btn" onclick="registerEvent('Ritmo: FV')">FV</button>
-        <button class="rhythm-btn" onclick="registerEvent('Ritmo: TVSP')">TVSP</button>
-        <button class="rhythm-btn" onclick="registerEvent('Ritmo: Asistolia')">Asistolia</button>
-        <button class="rhythm-btn" onclick="registerEvent('Ritmo: AESP')">AESP</button>
-      </div>
-      <div>
-        <h2>Fármacos</h2>
-        <button class="drug-btn">Adrenalina 1 mg</button>
-        <button class="drug-btn">Amiodarona 150 mg</button>
-        <button class="drug-btn">Amiodarona 300 mg</button>
-        <button class="drug-btn">Bicarbonato 2/3 M 250 cc</button>
-        <button class="drug-btn">Gluconato de Calcio 10%</button>
-        <button class="drug-btn">Sulfato de Magnesio 2 g</button>
-        <button class="drug-btn">Dextrosa 30% 20 ml</button>
-        <button class="drug-btn">Naloxona 0.4 mg</button>
-        <div style="margin-top: 10px;">
-          <label>Otro:</label>
-          <input type="text" id="input-other-drug" placeholder="Nombre y dosis" />
-          <button onclick="registerOtherDrug()">Registrar</button>
-        </div>
-      </div>
-    </div>
+  <div>
+    <h2>Tiempo Total</h2>
+    <div id="main-timer">00:00</div>
+    <button onclick="startMainTimer()">Inicio Reanimación</button>
   </div>
-<script>
-  const drugCounters = {};
+  <div>
+    <h2>Tiempo sin Compresiones</h2>
+    <div id="pause-timer">00:00</div>
+    <button id="pause-btn" onclick="togglePauseTimer()">Iniciar</button>
+  </div>
+  <div>
+    <h2>Ciclo de Compresiones</h2>
+    <div id="compression-timer">02:00</div>
+    <button onclick="startCompressionCycle()">Inicio de Compresiones</button>
+  </div>
+  <div>
+    <h2>Manejo de Vía Aérea</h2>
+    <input type="text" id="input-ml" placeholder="Máscara laríngea N°" />
+    <input type="text" id="input-tet" placeholder="TET N°" />
+    <button onclick="handleAirwayManagement()">Registrar Manejo</button>
+  </div>
+  <div>
+    <h2>Descargas</h2>
+    <input type="number" id="input-joules" placeholder="JOULE" />
+    <button onclick="registerShock()">Registrar Descarga</button>
+  </div>
+  <div>
+    <h2>Fármacos</h2>
+    <button class="drug-btn">Adrenalina 1 mg</button>
+    <button class="drug-btn">Amiodarona 150 mg</button>
+    <button class="drug-btn">Amiodarona 300 mg</button>
+    <button class="drug-btn">Bicarbonato 2/3 M 250 cc</button>
+    <button class="drug-btn">Gluconato de Calcio 10%</button>
+    <button class="drug-btn">Sulfato de Magnesio 2 g</button>
+    <button class="drug-btn">Dextrosa 30% 20 ml</button>
+    <button class="drug-btn">Naloxona 0.4 mg</button>
+    <input type="text" id="input-other-drug" placeholder="Otro fármaco" />
+    <button onclick="registerOtherDrug()">Registrar</button>
+  </div>
+  <div>
+    <h2>Ritmo</h2>
+    <button class="rhythm-btn" onclick="registerEvent('Ritmo: FV')">FV</button>
+    <button class="rhythm-btn" onclick="registerEvent('Ritmo: TVSP')">TVSP</button>
+    <button class="rhythm-btn" onclick="registerEvent('Ritmo: Asistolia')">Asistolia</button>
+    <button class="rhythm-btn" onclick="registerEvent('Ritmo: AESP')">AESP</button>
+  </div>
+  <div>
+    <h2>Línea de Tiempo</h2>
+    <ul id="timeline-list"></ul>
+    <button onclick="downloadTimelineAsPDF()">Descargar Línea de Tiempo (PDF)</button>
+  </div>
+  <div>
+    <button onclick="resetAll()">Reiniciar Todo</button>
+    <button onclick="registerEvent('RCE')">RCE</button>
+    <button onclick="endResuscitation()">Fin de Reanimación</button>
+  </div>
+  <script>
+const drugCounters = {};
 
-  function formatTime(seconds) {
-    const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
-    const secs = String(seconds % 60).padStart(2, '0');
-    return `${mins}:${secs}`;
-  }
+function formatTime(seconds) {
+  const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+  const secs = String(seconds % 60).padStart(2, '0');
+  return `${mins}:${secs}`;
+}
 
-  function startMainTimer() {
-    clearInterval(mainTimerInterval);
-    mainTimerInterval = setInterval(() => {
-      mainSeconds++;
-      document.getElementById('main-timer').textContent = formatTime(mainSeconds);
+function startMainTimer() {
+  clearInterval(mainTimerInterval);
+  mainTimerInterval = setInterval(() => {
+    mainSeconds++;
+    document.getElementById('main-timer').textContent = formatTime(mainSeconds);
+  }, 1000);
+  registerEvent('Inicio de reanimación');
+}
+
+function togglePauseTimer() {
+  const btn = document.getElementById('pause-btn');
+  if (!isPauseRunning) {
+    pauseTimerInterval = setInterval(() => {
+      pauseSeconds++;
+      document.getElementById('pause-timer').textContent = formatTime(pauseSeconds);
     }, 1000);
-    registerEvent('Inicio de reanimación');
-  }
-
-  function togglePauseTimer() {
-    const btn = document.getElementById('pause-btn');
-    if (!isPauseRunning) {
-      pauseTimerInterval = setInterval(() => {
-        pauseSeconds++;
-        document.getElementById('pause-timer').textContent = formatTime(pauseSeconds);
-      }, 1000);
-      btn.textContent = 'Pausar';
-    } else {
-      clearInterval(pauseTimerInterval);
-      btn.textContent = 'Iniciar';
-    }
-    isPauseRunning = !isPauseRunning;
-  }
-
-  function startCompressionCycle() {
-    clearInterval(compressionInterval);
-    compressionSecondsLeft = 120;
-    compressionActive = true;
-    document.getElementById('compression-timer').style.color = 'black';
-    if (!timelineStarted) {
-      timelineStarted = true;
-      timelineStartTime = mainSeconds;
-      registerEvent('Inicio de compresiones');
-    }
-    compressionInterval = setInterval(() => {
-      compressionSecondsLeft--;
-      document.getElementById('compression-timer').textContent = formatTime(compressionSecondsLeft);
-      if (compressionSecondsLeft === 30) {
-        document.getElementById('compression-timer').style.color = 'red';
-      }
-      if (compressionSecondsLeft <= 0) {
-        clearInterval(compressionInterval);
-        compressionActive = false;
-      }
-    }, 1000);
-  }
-
-  function registerEvent(text) {
-    if (!timelineStarted) {
-      timelineStarted = true;
-      timelineStartTime = mainSeconds;
-    }
-    const li = document.createElement('li');
-    const relativeTime = mainSeconds - timelineStartTime;
-    li.textContent = `[${formatTime(relativeTime)}] ${text}`;
-    document.getElementById('timeline-list').appendChild(li);
-  }
-
-  function handleAirwayManagement() {
-    const ml = document.getElementById('input-ml').value;
-    const tet = document.getElementById('input-tet').value;
-    if (ml) registerEvent(`Manejo Vía Aérea: Máscara laríngea N° ${ml}`);
-    if (tet) registerEvent(`Manejo Vía Aérea: TET N° ${tet}`);
-  }
-
-  function registerOtherDrug() {
-    const other = document.getElementById('input-other-drug').value;
-    if (other) {
-      registerEvent(`Otro fármaco: ${other}`);
-      document.getElementById('input-other-drug').value = '';
-    }
-  }
-
-  function registerShock() {
-    const joules = document.getElementById('input-joules').value;
-    if (joules) {
-      registerEvent(`Descarga eléctrica: ${joules} JOULE`);
-      document.getElementById('input-joules').value = '';
-    }
-  }
-
-  function downloadTimelineAsPDF() {
-    const listItems = document.querySelectorAll('#timeline-list li');
-    const doc = new window.jspdf.jsPDF();
-    doc.setFontSize(12);
-    doc.text("Línea de Tiempo - Reanimador CUA", 10, 10);
-    let y = 20;
-    listItems.forEach((item) => {
-      doc.text(item.textContent, 10, y);
-      y += 10;
-      if (y > 280) {
-        doc.addPage();
-        y = 20;
-      }
-    });
-    doc.save("linea_de_tiempo_RCP.pdf");
-  }
-
-  function resetAll() {
-    clearInterval(mainTimerInterval);
+    btn.textContent = 'Pausar';
+    registerEvent('Inicio pausa sin compresiones');
+  } else {
     clearInterval(pauseTimerInterval);
-    clearInterval(compressionInterval);
-    mainSeconds = 0;
-    pauseSeconds = 0;
-    compressionSecondsLeft = 120;
-    isPauseRunning = false;
-    compressionActive = false;
-    timelineStarted = false;
-    document.getElementById('main-timer').textContent = '00:00';
-    document.getElementById('pause-timer').textContent = '00:00';
-    document.getElementById('compression-timer').textContent = '02:00';
-    document.getElementById('compression-timer').style.color = 'black';
-    document.getElementById('pause-btn').textContent = 'Iniciar';
-    document.getElementById('timeline-list').innerHTML = '';
-    document.getElementById('input-ml').value = '';
-    document.getElementById('input-tet').value = '';
+    btn.textContent = 'Iniciar';
+    registerEvent('Fin pausa sin compresiones');
+  }
+  isPauseRunning = !isPauseRunning;
+}
+
+function startCompressionCycle() {
+  clearInterval(compressionInterval);
+  compressionSecondsLeft = 120;
+  compressionActive = true;
+  document.getElementById('compression-timer').style.color = 'black';
+  registerEvent('Nuevo ciclo de compresiones');
+  if (!timelineStarted) {
+    timelineStarted = true;
+    timelineStartTime = mainSeconds;
+  }
+  compressionInterval = setInterval(() => {
+    compressionSecondsLeft--;
+    document.getElementById('compression-timer').textContent = formatTime(compressionSecondsLeft);
+    if (compressionSecondsLeft === 30) {
+      document.getElementById('compression-timer').style.color = 'red';
+    }
+    if (compressionSecondsLeft <= 0) {
+      clearInterval(compressionInterval);
+      compressionActive = false;
+    }
+  }, 1000);
+}
+
+function registerEvent(text) {
+  if (!timelineStarted) {
+    timelineStarted = true;
+    timelineStartTime = mainSeconds;
+  }
+  const li = document.createElement('li');
+  const relativeTime = mainSeconds - timelineStartTime;
+  li.textContent = `[${formatTime(relativeTime)}] ${text}`;
+  document.getElementById('timeline-list').appendChild(li);
+}
+
+function handleAirwayManagement() {
+  const ml = document.getElementById('input-ml').value;
+  const tet = document.getElementById('input-tet').value;
+  if (ml) registerEvent(`Manejo Vía Aérea: Máscara laríngea N° ${ml}`);
+  if (tet) registerEvent(`Manejo Vía Aérea: TET N° ${tet}`);
+}
+
+function registerOtherDrug() {
+  const other = document.getElementById('input-other-drug').value;
+  if (other) {
+    registerEvent(`Otro fármaco: ${other}`);
     document.getElementById('input-other-drug').value = '';
+  }
+}
+
+function registerShock() {
+  const joules = document.getElementById('input-joules').value;
+  if (joules) {
+    registerEvent(`Descarga eléctrica: ${joules} JOULE`);
     document.getElementById('input-joules').value = '';
   }
+}
 
-  function endResuscitation() {
-    clearInterval(mainTimerInterval);
-    clearInterval(pauseTimerInterval);
-    clearInterval(compressionInterval);
-    registerEvent('Fin de Reanimación');
-  }
+function downloadTimelineAsPDF() {
+  const listItems = document.querySelectorAll('#timeline-list li');
+  const doc = new window.jspdf.jsPDF();
+  doc.setFontSize(12);
+  doc.text("Línea de Tiempo - Reanimador CUA", 10, 10);
+  let y = 20;
+  listItems.forEach((item) => {
+    doc.text(item.textContent, 10, y);
+    y += 10;
+    if (y > 280) {
+      doc.addPage();
+      y = 20;
+    }
+  });
+  doc.save("linea_de_tiempo_RCP.pdf");
+}
 
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.drug-btn').forEach(button => {
-      const originalText = button.textContent;
-      drugCounters[originalText] = 0;
-      button.addEventListener('click', () => {
-        drugCounters[originalText]++;
-        button.style.backgroundColor = '#d62828';
-        button.textContent = `${originalText} (${drugCounters[originalText]})`;
-        registerEvent(`${originalText}`);
-      });
+function resetAll() {
+  clearInterval(mainTimerInterval);
+  clearInterval(pauseTimerInterval);
+  clearInterval(compressionInterval);
+  mainSeconds = 0;
+  pauseSeconds = 0;
+  compressionSecondsLeft = 120;
+  isPauseRunning = false;
+  compressionActive = false;
+  timelineStarted = false;
+  document.getElementById('main-timer').textContent = '00:00';
+  document.getElementById('pause-timer').textContent = '00:00';
+  document.getElementById('compression-timer').textContent = '02:00';
+  document.getElementById('compression-timer').style.color = 'black';
+  document.getElementById('pause-btn').textContent = 'Iniciar';
+  document.getElementById('timeline-list').innerHTML = '';
+  document.getElementById('input-ml').value = '';
+  document.getElementById('input-tet').value = '';
+  document.getElementById('input-other-drug').value = '';
+  document.getElementById('input-joules').value = '';
+}
+
+function endResuscitation() {
+  clearInterval(mainTimerInterval);
+  clearInterval(pauseTimerInterval);
+  clearInterval(compressionInterval);
+  registerEvent('Fin de Reanimación');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.drug-btn').forEach(button => {
+    const originalText = button.textContent;
+    drugCounters[originalText] = 0;
+    button.addEventListener('click', () => {
+      drugCounters[originalText]++;
+      button.style.backgroundColor = '#d62828';
+      button.textContent = `${originalText} (${drugCounters[originalText]})`;
+      registerEvent(`${originalText}`);
     });
   });
+});
 
-  let mainSeconds = 0;
-  let pauseSeconds = 0;
-  let compressionSecondsLeft = 120;
-  let mainTimerInterval;
-  let pauseTimerInterval;
-  let compressionInterval;
-  let isPauseRunning = false;
-  let compressionActive = false;
-  let timelineStarted = false;
-  let timelineStartTime = 0;
+let mainSeconds = 0;
+let pauseSeconds = 0;
+let compressionSecondsLeft = 120;
+let mainTimerInterval;
+let pauseTimerInterval;
+let compressionInterval;
+let isPauseRunning = false;
+let compressionActive = false;
+let timelineStarted = false;
+let timelineStartTime = 0;
 </script>
 </body>
 </html>
+
